@@ -9,6 +9,7 @@ export function useUpload() {
   const [shareCode, setShareCode] = useState<string | null>(null);
 
   const upload = async (content: File | string, type: ShareType) => {
+    console.log("working");
     try {
       setIsUploading(true);
 
@@ -17,10 +18,12 @@ export function useUpload() {
 
       if (content instanceof File) {
         // Convert File to base64
+        console.log("type of file");
         const base64 = await fileToBase64(content);
         processedContent = base64;
         mimeType = content.type;
       } else {
+        console.log("not type of file");
         processedContent = content;
       }
 
@@ -31,7 +34,7 @@ export function useUpload() {
         },
         body: JSON.stringify({
           type,
-          content: processedContent,
+          content,
           mimeType,
         }),
       });

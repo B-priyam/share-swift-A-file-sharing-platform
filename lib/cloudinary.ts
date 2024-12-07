@@ -14,6 +14,8 @@ export async function uploadToCloudinary(
 ): Promise<string> {
   const timestamp = Math.round(new Date().getTime() / 1000);
 
+  console.log(base64Data.length);
+
   // Generate signature
   const signature = cloudinary.utils.api_sign_request(
     {
@@ -48,7 +50,6 @@ export async function uploadToCloudinary(
   }
 
   const result = await response.json();
-  console.log(result);
   return result.secure_url;
 }
 

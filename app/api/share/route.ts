@@ -12,6 +12,7 @@ export async function POST(req: Request) {
     const data = await req.json();
     const { type, content, mimeType } = data;
 
+    // console.log(data);
     if (!type || !content) {
       return NextResponse.json(
         { error: "Missing required fields" },
