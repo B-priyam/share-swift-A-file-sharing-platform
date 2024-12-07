@@ -1,0 +1,28 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Share {
+  id          String    @id @default(cuid())
+  code        String    @unique
+  type        ShareType
+  content     String? // For text content or media URLs
+  mimeType    String? // For identifying file types
+  createdAt   DateTime  @default(now())
+  expiresAt   DateTime
+  accessed    Boolean   @default(false)
+  accessCount Int       @default(0)
+}
+
+enum ShareType {
+  TEXT
+  FILE
+  IMAGE
+  AUDIO
+  VIDEO
+}
