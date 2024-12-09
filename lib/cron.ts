@@ -49,4 +49,4 @@ async function deleteExpiredFiles() {
   }
 }
 
-cron.schedule("*0 * * *  *", deleteExpiredFiles);
+cron.schedule("0 * * *  *", deleteExpiredFiles);
