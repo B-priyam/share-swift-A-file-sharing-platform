@@ -14,14 +14,17 @@ export function useUpload() {
 
       let processedContent: string;
       let mimeType = "";
+      let name = "";
 
       if (content instanceof File) {
         // Convert File to base64
         const base64 = await fileToBase64(content);
         processedContent = base64;
         mimeType = content.type;
+        name = content.name; // Extract name from File object
       } else {
         processedContent = content;
+        name = "untitled"; // Provide a default name for non-File content
       }
 
       const response = await fetch("/api/share", {
@@ -33,7 +36,7 @@ export function useUpload() {
           type,
           content: processedContent,
           mimeType,
-          name: content.name!,
+          name, // Include the name in the request body
         }),
       });
 
@@ -43,8 +46,7 @@ export function useUpload() {
 
       const data = await response.json();
       setShareCode(data.code);
-      toast(`Upload Successful",
-       Your share code is: ${data.code}`);
+      toast(`Upload Successful. Your share code is: ${data.code}`);
     } catch (error) {
       toast("Upload Failed");
     } finally {

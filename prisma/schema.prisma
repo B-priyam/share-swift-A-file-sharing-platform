@@ -11,8 +11,9 @@ model Share {
   id          String    @id @default(cuid())
   code        String    @unique
   type        ShareType
-  content     String? // For text content or media URLs
-  mimeType    String? // For identifying file types
+  content     String?
+  mimeType    String?
+  publicId    String?
   createdAt   DateTime  @default(now())
   expiresAt   DateTime
   accessed    Boolean   @default(false)

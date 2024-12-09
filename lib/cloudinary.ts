@@ -26,8 +26,6 @@ export async function uploadToCloudinary(
     cloudinaryConfig.api_secret
   );
 
-  console.log("Generated Signature:", signature);
-
   // Prepare form data
   const formData = new FormData();
   formData.append("file", base64Data);
@@ -58,7 +56,7 @@ export async function uploadToCloudinary(
   }
 
   const result = await response.json();
-  return result.secure_url;
+  return result;
 }
 
 export async function deleteFromCloudinary(

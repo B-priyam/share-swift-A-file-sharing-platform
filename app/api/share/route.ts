@@ -23,13 +23,14 @@ export async function POST(req: Request) {
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours from now
 
     let finalContent = "";
+    let publicId = "";
 
     if (type === ShareType.TEXT) {
       finalContent = content;
     } else {
       // type === ShareType.FILE ?
 
-      const cloudinaryUrl =
+      const cloudinaryUrl: any =
         type === ShareType.FILE
           ? await uploadToCloudinary(name, content, "swiftshare/docs", "raw")
           : type === ShareType.VIDEO
@@ -54,8 +55,8 @@ export async function POST(req: Request) {
               "video"
             )
           : "";
-
-      finalContent = cloudinaryUrl;
+      finalContent = cloudinaryUrl.secure_url;
+      publicId = cloudinaryUrl.public_id;
     }
 
     const share = await prisma.share.create({
@@ -65,6 +66,7 @@ export async function POST(req: Request) {
         content: finalContent,
         mimeType,
         expiresAt,
+        publicId,
       },
     });
 
