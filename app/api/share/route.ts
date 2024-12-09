@@ -10,7 +10,7 @@ export const runtime = "nodejs";
 export async function POST(req: Request) {
   try {
     const data = await req.json();
-    const { type, content, mimeType } = data;
+    const { type, content, mimeType, name } = data;
 
     if (!type || !content) {
       return NextResponse.json(
@@ -31,13 +31,28 @@ export async function POST(req: Request) {
 
       const cloudinaryUrl =
         type === ShareType.FILE
-          ? await uploadToCloudinary(content, "swiftshare/docs", "raw")
+          ? await uploadToCloudinary(name, content, "swiftshare/docs", "raw")
           : type === ShareType.VIDEO
-          ? await uploadToCloudinary(content, "swiftshare/videos", "video")
+          ? await uploadToCloudinary(
+              name,
+              content,
+              "swiftshare/videos",
+              "video"
+            )
           : type === ShareType.IMAGE
-          ? await uploadToCloudinary(content, "swiftshare/images", "image")
+          ? await uploadToCloudinary(
+              name,
+              content,
+              "swiftshare/images",
+              "image"
+            )
           : type === ShareType.AUDIO
-          ? await uploadToCloudinary(content, "swiftshare/videos", "video")
+          ? await uploadToCloudinary(
+              name,
+              content,
+              "swiftshare/videos",
+              "video"
+            )
           : "";
 
       finalContent = cloudinaryUrl;

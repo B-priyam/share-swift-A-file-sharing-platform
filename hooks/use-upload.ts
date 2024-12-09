@@ -33,6 +33,7 @@ export function useUpload() {
           type,
           content: processedContent,
           mimeType,
+          name: content.name!,
         }),
       });
 

@@ -42,6 +42,18 @@ export default function ReceivePage() {
     }
   };
 
+  const downloadImage = (url: string) => {
+    console.log(url.split("/")[11].split(".")[0]);
+    let name = url.split("/")[11].split(".")[0];
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = name;
+    anchor.target = "_blank"; // Ensure it opens in a new tab if needed
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
+  };
+
   const renderContent = () => {
     if (!content) return null;
 
@@ -73,10 +85,11 @@ export default function ReceivePage() {
                 className="max-w-full"
               />
             </Card>
-            <Button className="mt-2 w-36">
-              <a href={"/"} download={content.content}>
-                Download
-              </a>
+            <Button
+              className="mt-2 w-36"
+              onClick={() => downloadImage(content.content)}
+            >
+              Download
             </Button>
           </div>
         );

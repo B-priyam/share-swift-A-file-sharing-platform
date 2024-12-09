@@ -8,21 +8,25 @@ const cloudinaryConfig = {
 };
 
 export async function uploadToCloudinary(
+  name: string,
   base64Data: string,
   folder: string,
-  resourceType: "image" | "raw" | "video" | "audio" = "raw" // Defaulting to "raw"
+  resourceType: "image" | "raw" | "video" | "audio" = "raw"
 ): Promise<string> {
   const timestamp = Math.round(new Date().getTime() / 1000);
 
   // Generate signature
+  const publicId = `${folder}/${name}`;
   const signature = cloudinary.utils.api_sign_request(
     {
       timestamp,
       folder,
-      upload_preset: "swiftshare",
+      public_id: publicId,
     },
     cloudinaryConfig.api_secret
   );
+
+  console.log("Generated Signature:", signature);
 
   // Prepare form data
   const formData = new FormData();
@@ -30,8 +34,8 @@ export async function uploadToCloudinary(
   formData.append("api_key", cloudinaryConfig.api_key);
   formData.append("timestamp", timestamp.toString());
   formData.append("signature", signature);
-  formData.append("folder", folder);
-  formData.append("upload_preset", "swiftshare");
+  formData.append("folder", folder); // Ensure it's included once
+  formData.append("public_id", publicId); // Custom file name
   formData.append("resource_type", resourceType);
 
   // Use the appropriate resource type in the endpoint
@@ -44,7 +48,13 @@ export async function uploadToCloudinary(
   );
 
   if (!response.ok) {
-    throw new Error("Failed to upload to Cloudinary");
+    const errorDetails = await response.json();
+    console.error("Cloudinary Error:", errorDetails);
+    throw new Error(
+      `Failed to upload to Cloudinary: ${
+        errorDetails.error?.message || "Unknown error"
+      }`
+    );
   }
 
   const result = await response.json();
@@ -81,6 +91,12 @@ export async function deleteFromCloudinary(
   );
 
   if (!response.ok) {
-    throw new Error("Failed to delete from Cloudinary");
+    const errorDetails = await response.json();
+    console.error("Cloudinary Error:", errorDetails);
+    throw new Error(
+      `Failed to delete from Cloudinary: ${
+        errorDetails.error?.message || "Unknown error"
+      }`
+    );
   }
 }
