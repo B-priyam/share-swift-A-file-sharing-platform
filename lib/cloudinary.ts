@@ -15,26 +15,31 @@ export async function uploadToCloudinary(
 ): Promise<string> {
   const timestamp = Math.round(new Date().getTime() / 1000);
 
+  console.log(name.split(".")[1].length);
+
+  console.log(name.substring(0, name.split(".")[1].length));
+
   // Generate signature
   const publicId = `${folder}/${name}`;
-  const signature = cloudinary.utils.api_sign_request(
-    {
-      timestamp,
-      folder,
-      public_id: publicId,
-    },
-    cloudinaryConfig.api_secret
-  );
+  // const signature = cloudinary.utils.api_sign_request(
+  //   {
+  //     timestamp,
+  //     folder,
+  //     public_id: publicId,
+  //   },
+  //   cloudinaryConfig.api_secret
+  // );
 
   // Prepare form data
   const formData = new FormData();
   formData.append("file", base64Data);
   formData.append("api_key", cloudinaryConfig.api_key);
   formData.append("timestamp", timestamp.toString());
-  formData.append("signature", signature);
+  // formData.append("signature", signature);
   formData.append("folder", folder); // Ensure it's included once
   formData.append("public_id", publicId); // Custom file name
   formData.append("resource_type", resourceType);
+  formData.append("upload_preset", "swiftshare");
 
   // Use the appropriate resource type in the endpoint
   const response = await fetch(
@@ -64,6 +69,8 @@ export async function deleteFromCloudinary(
   resourceType: "image" | "raw" | "video" | "audio" = "raw"
 ): Promise<void> {
   const timestamp = Math.round(new Date().getTime() / 1000);
+
+  console.log("Attempting to delete from Cloudinary:", publicId, resourceType);
 
   // Generate signature
   const signature = cloudinary.utils.api_sign_request(

@@ -1,5 +1,5 @@
 import cron from "node-cron";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, ShareType } from "@prisma/client";
 import { deleteFromCloudinary } from "./cloudinary";
 
 const prisma = new PrismaClient();
@@ -10,14 +10,22 @@ async function deleteExpiredFiles() {
     const expiredShares = await prisma.share.findMany({
       where: {
         createdAt: {
-          lte: new Date(Date.now() - 90 * 1000),
+          lte: new Date(Date.now() - 24 * 60 * 60 * 1000),
         },
       },
     });
 
     for (const share of expiredShares) {
       let type = share.mimeType?.split("/")[0];
+      if (share.type === ShareType.TEXT) {
+        await prisma.share.delete({
+          where: { id: share.id },
+        });
+
+        console.log("text deleted");
+      }
       if (share.publicId) {
+        // console.log(share, type);
         await deleteFromCloudinary(
           share.publicId,
           type === "image"
@@ -37,8 +45,8 @@ async function deleteExpiredFiles() {
       console.log(`Deleted file and record: ${share.id}`);
     }
   } catch (error) {
-    console.error("Error deleting expired files:", error);
+    // console.error("Error deleting expired files:", error);
   }
 }
 
-cron.schedule("*/10 * * * * *", deleteExpiredFiles);
+cron.schedule("*0 * * *  *", deleteExpiredFiles);
