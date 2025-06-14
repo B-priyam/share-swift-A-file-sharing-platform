@@ -16,7 +16,7 @@ export default function ShareFilePage() {
 
   const handleFileSelect = async (file: File) => {
     // Check file size (100MB limit)
-    if (file.size > 100 * 1024 * 1024) {
+    if (file.size > 10 * 1024 * 1024) {
       toast("File too large");
       return;
     }
@@ -37,8 +37,8 @@ export default function ShareFilePage() {
             onFileSelect={handleFileSelect}
             icon={Upload}
             title={isUploading ? "Uploading..." : "Drop your files here"}
-            description="or click to browse (Max size: 100MB)"
-            maxSize={100 * 1024 * 1024}
+            description="or click to browse (Max size: 10MB)"
+            maxSize={20 * 1024 * 1024}
           />
         </Card>
         {shareCode && <ShareCodeDisplay code={shareCode} />}

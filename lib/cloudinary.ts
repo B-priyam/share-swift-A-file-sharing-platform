@@ -7,41 +7,47 @@ const cloudinaryConfig = {
   api_secret: process.env.CLOUDINARY_API_SECRET!,
 };
 
+// Sanitize the file name to remove problematic characters
+function sanitizeFileName(fileName: string): string {
+  const noSlashes = fileName.replace(/[\\/]/g, "_"); // remove slashes
+  const asciiOnly = noSlashes.replace(/[^\x20-\x7E]/g, ""); // remove hidden unicode
+  const safe = asciiOnly.replace(/[^\w.\-]/g, "_"); // final clean
+  return safe;
+}
+
+// Upload function
 export async function uploadToCloudinary(
   name: string,
   base64Data: string,
   folder: string,
   resourceType: "image" | "raw" | "video" | "audio" = "raw"
 ): Promise<string> {
-  const timestamp = Math.round(new Date().getTime() / 1000);
+  const timestamp = Math.round(Date.now() / 1000);
 
-  console.log(name.split(".")[1].length);
+  // Sanitize the file name
+  const cleanName = sanitizeFileName(name);
 
-  console.log(name.substring(0, name.split(".")[1].length));
+  // Use only the clean file name as public_id (folder is passed separately)
+  const publicId = cleanName;
 
-  // Generate signature
-  const publicId = `${folder}/${name}`;
-  // const signature = cloudinary.utils.api_sign_request(
-  //   {
-  //     timestamp,
-  //     folder,
-  //     public_id: publicId,
-  //   },
-  //   cloudinaryConfig.api_secret
-  // );
-
-  // Prepare form data
   const formData = new FormData();
+  const signature = cloudinary.utils.api_sign_request(
+    {
+      timestamp,
+      folder,
+      public_id: publicId,
+    },
+    cloudinaryConfig.api_secret
+  );
+
+  formData.append("signature", signature);
   formData.append("file", base64Data);
   formData.append("api_key", cloudinaryConfig.api_key);
   formData.append("timestamp", timestamp.toString());
-  // formData.append("signature", signature);
-  formData.append("folder", folder); // Ensure it's included once
-  formData.append("public_id", publicId); // Custom file name
+  formData.append("folder", folder); // Use folder parameter separately
+  formData.append("public_id", publicId); // Safe file name only
   formData.append("resource_type", resourceType);
-  formData.append("upload_preset", "swiftshare");
 
-  // Use the appropriate resource type in the endpoint
   const response = await fetch(
     `https://api.cloudinary.com/v1_1/${cloudinaryConfig.cloud_name}/${resourceType}/upload`,
     {
@@ -52,7 +58,7 @@ export async function uploadToCloudinary(
 
   if (!response.ok) {
     const errorDetails = await response.json();
-    console.error("Cloudinary Error:", errorDetails);
+    console.error("Cloudinary Upload Error:", errorDetails);
     throw new Error(
       `Failed to upload to Cloudinary: ${
         errorDetails.error?.message || "Unknown error"
@@ -61,14 +67,15 @@ export async function uploadToCloudinary(
   }
 
   const result = await response.json();
-  return result;
+  return result.secure_url; // Or return full result if needed
 }
 
+// Delete function
 export async function deleteFromCloudinary(
   publicId: string,
   resourceType: "image" | "raw" | "video" | "audio" = "raw"
 ): Promise<void> {
-  const timestamp = Math.round(new Date().getTime() / 1000);
+  const timestamp = Math.round(Date.now() / 1000);
 
   console.log("Attempting to delete from Cloudinary:", publicId, resourceType);
 
@@ -97,7 +104,7 @@ export async function deleteFromCloudinary(
 
   if (!response.ok) {
     const errorDetails = await response.json();
-    console.error("Cloudinary Error:", errorDetails);
+    console.error("Cloudinary Delete Error:", errorDetails);
     throw new Error(
       `Failed to delete from Cloudinary: ${
         errorDetails.error?.message || "Unknown error"
