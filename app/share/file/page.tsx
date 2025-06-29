@@ -15,7 +15,7 @@ export default function ShareFilePage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const handleFileSelect = async (file: File) => {
-    // Check file size (100MB limit)
+    // Check file size (10MB limit)
     if (file.size > 10 * 1024 * 1024) {
       toast("File too large");
       return;

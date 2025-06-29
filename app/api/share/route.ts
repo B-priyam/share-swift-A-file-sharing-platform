@@ -7,6 +7,19 @@ import { ShareType } from "@prisma/client";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
+function getCloudinaryPublicId(url: string) {
+  const path = new URL(url).pathname; // /raw/upload/v1751218708/swiftshare/docs/18-6.pdf
+  const parts = path.split("/");
+  const versionIndex = parts.findIndex((p) => /^v\d+$/.test(p)); // Find 'v1751218708'
+  const publicIdParts = parts.slice(versionIndex + 1); // ['swiftshare', 'docs', '18-6.pdf']
+
+  const filename = publicIdParts.pop(); // '18-6.pdf'
+  const nameWithoutExt = filename?.replace(/\.[^/.]+$/, ""); // remove .pdf
+
+  publicIdParts.push(nameWithoutExt!); // ['swiftshare', 'docs', '18-6']
+  return publicIdParts.join("/"); // 'swiftshare/docs/18-6'
+}
+
 export async function POST(req: Request) {
   try {
     const data = await req.json();
@@ -55,8 +68,9 @@ export async function POST(req: Request) {
               "video"
             )
           : "";
-      finalContent = cloudinaryUrl.secure_url;
-      publicId = cloudinaryUrl.public_id;
+
+      finalContent = cloudinaryUrl;
+      publicId = getCloudinaryPublicId(cloudinaryUrl);
     }
 
     const share = await prisma.share.create({

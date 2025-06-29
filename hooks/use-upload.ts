@@ -16,6 +16,10 @@ export function useUpload() {
       let mimeType = "";
       let name = "";
 
+      if (content instanceof File && content.size === 0) {
+        throw new Error("Empty file uploaded");
+      }
+
       if (content instanceof File) {
         // Convert File to base64
         const base64 = await fileToBase64(content);
@@ -36,7 +40,7 @@ export function useUpload() {
           type,
           content: processedContent,
           mimeType,
-          name, // Include the name in the request body
+          name,
         }),
       });
 

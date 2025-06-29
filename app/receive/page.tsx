@@ -34,6 +34,7 @@ export default function ReceivePage() {
       }
 
       const data = await response.json();
+      console.log("data", data);
       setContent(data.share);
     } catch (error) {
       toast("Invalid code or content has expired");
@@ -57,7 +58,7 @@ export default function ReceivePage() {
   const renderContent = () => {
     if (!content) return null;
 
-    console.log(content);
+    console.log(content, "🔴🔴");
 
     switch (content.type) {
       case ShareType.TEXT:
@@ -111,16 +112,16 @@ export default function ReceivePage() {
         );
       default:
         return (
-          <>
-            <Card className="p-6 mt-6">
-              <Button asChild className="w-full">
-                <a href={content.content} download>
-                  <Download className="mr-2 h-4 w-4" />
-                  Download File
-                </a>
-              </Button>
-            </Card>
-          </>
+          <Card className="p-6 mt-6">
+            <a
+              href={content.content}
+              download
+              className="w-full inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-white text-sm font-medium hover:bg-primary/90"
+            >
+              <Download className="mr-2 h-4 w-4 cursor-pointer" />
+              Download File
+            </a>
+          </Card>
         );
     }
   };

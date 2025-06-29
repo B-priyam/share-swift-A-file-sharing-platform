@@ -77,8 +77,6 @@ export async function deleteFromCloudinary(
 ): Promise<void> {
   const timestamp = Math.round(Date.now() / 1000);
 
-  console.log("Attempting to delete from Cloudinary:", publicId, resourceType);
-
   // Generate signature
   const signature = cloudinary.utils.api_sign_request(
     {

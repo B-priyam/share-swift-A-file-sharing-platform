@@ -21,8 +21,6 @@ async function deleteExpiredFiles() {
         await prisma.share.delete({
           where: { id: share.id },
         });
-
-        console.log("text deleted");
       }
       if (share.publicId) {
         // console.log(share, type);
@@ -41,8 +39,6 @@ async function deleteExpiredFiles() {
       await prisma.share.delete({
         where: { id: share.id },
       });
-
-      console.log(`Deleted file and record: ${share.id}`);
     }
   } catch (error) {
     // console.error("Error deleting expired files:", error);
