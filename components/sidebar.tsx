@@ -52,7 +52,12 @@ const routes = [
   },
 ];
 
-export function Sidebar() {
+interface sideBarProps {
+  isOpen?: Boolean;
+  setisOpen?: (value: boolean) => void;
+}
+
+export function Sidebar({ setisOpen }: sideBarProps) {
   const pathname = usePathname();
 
   return (
@@ -67,6 +72,7 @@ export function Sidebar() {
             <Link
               key={route.href}
               href={route.href}
+              onClick={() => setisOpen?.(false)}
               className={cn(
                 "text-sm group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-blue-600 hover:bg-blue-100/50 dark:hover:bg-blue-900/50 rounded-lg transition",
                 pathname === route.href
