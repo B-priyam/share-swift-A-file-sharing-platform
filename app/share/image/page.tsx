@@ -23,7 +23,7 @@ export default function ShareImagePage() {
 
   const handleFileSelect = async (file: File) => {
     // Check file size (20MB limit for images)
-    if (file.size > 20 * 1024 * 1024) {
+    if (file.size > 10 * 1024 * 1024) {
       toast("File too large");
       return;
     }
@@ -46,7 +46,7 @@ export default function ShareImagePage() {
             accept={ACCEPTED_TYPES}
             maxSize={20 * 1024 * 1024}
             title={isUploading ? "Uploading..." : "Drop your images here"}
-            description="Supports: JPG, PNG, GIF, WebP (Max size: 20MB)"
+            description="Supports: JPG, PNG, GIF, WebP (Max size: 10MB)"
           />
         </Card>
         {shareCode && <ShareCodeDisplay code={shareCode} />}

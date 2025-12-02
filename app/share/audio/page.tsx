@@ -23,8 +23,8 @@ export default function ShareAudioPage() {
 
   const handleFileSelect = async (file: File) => {
     // Check file size (50MB limit for audio)
-    if (file.size > 50 * 1024 * 1024) {
-      toast("File too large Maximum audio size is 50MB");
+    if (file.size > 10 * 1024 * 1024) {
+      toast("File too large Maximum audio size is 10MB");
       return;
     }
 
@@ -46,7 +46,7 @@ export default function ShareAudioPage() {
             accept={ACCEPTED_TYPES}
             maxSize={50 * 1024 * 1024}
             title={isUploading ? "Uploading..." : "Drop your audio files here"}
-            description="Supports: MP3, WAV, OGG, M4A (Max size: 50MB)"
+            description="Supports: MP3, WAV, OGG, M4A (Max size: 10MB)"
           />
         </Card>
         {shareCode && <ShareCodeDisplay code={shareCode} />}

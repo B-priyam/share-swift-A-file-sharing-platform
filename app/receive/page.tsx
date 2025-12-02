@@ -20,6 +20,7 @@ export default function ReceivePage() {
   const [code, setCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [content, setContent] = useState<any>(null);
+  const [previewUrl, setPreviewUrl] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,7 +35,9 @@ export default function ReceivePage() {
       }
 
       const data = await response.json();
-      console.log("data", data);
+      if (data.share.type) {
+        setPreviewUrl(data.share.content);
+      }
       setContent(data.share);
     } catch (error) {
       toast("Invalid code or content has expired");
@@ -43,22 +46,26 @@ export default function ReceivePage() {
     }
   };
 
-  const downloadImage = (url: string) => {
-    console.log(url.split("/")[11].split(".")[0]);
-    let name = url.split("/")[11].split(".")[0];
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = name;
-    anchor.target = "_blank"; // Ensure it opens in a new tab if needed
-    document.body.appendChild(anchor);
-    anchor.click();
-    document.body.removeChild(anchor);
+  const downloadImage = async (url: string) => {
+    // let name = url.split("/")[11].split(".")[0];
+    // const anchor = document.createElement("a");
+    // anchor.href = url;
+    // anchor.download = name;
+    // anchor.target = "_blank";
+    // document.body.appendChild(anchor);
+    // anchor.click();
+    // document.body.removeChild(anchor);
+    if (!url) {
+      toast.error("Image not available");
+    }
+
+    const downloadUrl = url.replace("/upload/", "/upload/fl_attachment/");
+
+    window.location.href = downloadUrl;
   };
 
   const renderContent = () => {
     if (!content) return null;
-
-    console.log(content, "🔴🔴");
 
     switch (content.type) {
       case ShareType.TEXT:
@@ -96,11 +103,21 @@ export default function ReceivePage() {
         );
       case ShareType.VIDEO:
         return (
-          <Card className="p-6 mt-6">
-            <video controls className="w-full">
-              <source src={content.content} type={content.mimeType} />
-            </video>
-          </Card>
+          <div className="flex flex-col items-center">
+            <Card className="p-6 mt-6">
+              <video controls className="w-full">
+                <source src={content.content} type={content.mimeType} />
+              </video>
+              <div className="w-full justify-center flex">
+                <Button
+                  className="mt-2 w-36"
+                  onClick={() => downloadImage(content.content)}
+                >
+                  Download
+                </Button>
+              </div>
+            </Card>
+          </div>
         );
       case ShareType.AUDIO:
         return (
@@ -108,19 +125,36 @@ export default function ReceivePage() {
             <audio controls className="w-full">
               <source src={content.content} type={content.mimeType} />
             </audio>
+            <div className="w-full justify-center flex">
+              <Button
+                className="mt-2 w-36"
+                onClick={() => downloadImage(content.content)}
+              >
+                Download
+              </Button>
+            </div>
           </Card>
         );
       default:
         return (
           <Card className="p-6 mt-6">
             <a
-              href={content.content}
+              href={content.content.replace(
+                "/upload/",
+                "/upload/fl_attachment/"
+              )}
               download
               className="w-full inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-white text-sm font-medium hover:bg-primary/90"
             >
               <Download className="mr-2 h-4 w-4 cursor-pointer" />
               Download File
             </a>
+            {previewUrl && (
+              <iframe
+                src={previewUrl}
+                className="w-full h-[500px] border-none mt-5"
+              ></iframe>
+            )}
           </Card>
         );
     }
